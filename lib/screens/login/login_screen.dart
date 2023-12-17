@@ -193,9 +193,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   if (validation) {
                     await loginProvider.loginUser(
                         loginProvider.kAdi!, loginProvider.sifre!);
-                    Navigator.of(context).pushNamed(size.width < 490
-                        ? DashboardWebScreen.routeName
-                        : DashboardMobilScreen.routeName);
+                    Navigator.of(context)
+                        .pushNamed(DashboardMobilScreen.routeName);
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(

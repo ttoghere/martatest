@@ -22,7 +22,7 @@ class LoginProvider extends ChangeNotifier {
 
   Future<Map<String, dynamic>> loginUser(
       String username, String password) async {
-    final String url = 'https://test.guzelasistan.com/core/v1/auth/login';
+    const String url = 'https://test.guzelasistan.com/core/v1/auth/login';
 
     final Map<String, String> headers = {
       'Content-Type': 'application/json',

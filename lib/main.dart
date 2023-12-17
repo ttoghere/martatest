@@ -36,13 +36,7 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF5850EC)),
           useMaterial3: true,
         ),
-        home: size.width > 500 && size.width < 850
-            ? const LoginScreen(
-                adaptiveRatio: 1,
-              )
-            : size.width > 850 && size.width < 1200
-                ? const LoginScreen(adaptiveRatio: 1.5)
-                : const LoginScreen(adaptiveRatio: 2),
+        home: LoginScreen(adaptiveRatio: 1),
         routes: {
           DashboardMobilScreen.routeName: (context) =>
               const DashboardMobilScreen(),
