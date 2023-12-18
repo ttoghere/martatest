@@ -34,13 +34,13 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           scaffoldBackgroundColor: const Color(0xFFF1F5F9),
           colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF5850EC)),
+          iconTheme: const IconThemeData(color: Colors.white),
           useMaterial3: true,
         ),
-        home: LoginScreen(adaptiveRatio: 1),
+        home: const LoginScreen(adaptiveRatio: 1),
         routes: {
           DashboardMobilScreen.routeName: (context) =>
               const DashboardMobilScreen(),
-          DashboardWebScreen.routeName: (context) => const DashboardWebScreen(),
         },
       ),
     );
