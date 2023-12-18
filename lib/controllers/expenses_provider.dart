@@ -25,7 +25,7 @@ class ExpensesProvider extends ChangeNotifier {
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseData = json.decode(response.body);
-      final List<dynamic> expenses = responseData['data'];
+      final List<dynamic> expenses = responseData['data'] ?? [];
       return expenses;
     } else {
       throw Exception(

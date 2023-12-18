@@ -1,7 +1,14 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:martatest/controllers/profile_provider.dart';
 import 'package:provider/provider.dart';
+
+import 'package:martatest/controllers/controllers.dart';
+import 'package:martatest/controllers/profile_provider.dart';
+
+import './inner_screens/inner_screens.dart';
 
 class DashboardMobilScreen extends StatefulWidget {
   static const routeName = "/dashmobil";
@@ -29,18 +36,18 @@ class _DashboardMobilScreenState extends State<DashboardMobilScreen>
       (BuildContext context) {
         return Container(
           // Alt sayfanın içeriği buraya gelir.
-          padding: EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              Text('Alt Sayfa İçeriği'),
-              SizedBox(height: 16),
+              const Text('Alt Sayfa İçeriği'),
+              const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () {
                   // Alt sayfayı kapatır.
                   Navigator.pop(context);
                 },
-                child: Text('Alt Sayfayı Kapat'),
+                child: const Text('Alt Sayfayı Kapat'),
               ),
             ],
           ),
@@ -250,190 +257,88 @@ class _DashboardMobilScreenState extends State<DashboardMobilScreen>
         body: TabBarView(
           controller: tabController,
           children: [
-            Stack(
-              children: [
-                const Column(
-                  children: [],
-                ),
-                Positioned(
-                  bottom: 50,
-                  left: 30,
-                  child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
-                    width: 138,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      color: const Color(0xFF5850EC),
-                    ),
-                    child: const Text(
-                      "Tahsilatlar",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  bottom: 50,
-                  right: 30,
-                  child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
-                    width: 138,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      color: const Color(0xFF5850EC),
-                    ),
-                    child: const Text(
-                      "Gün Sonu Hesapla",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                )
-              ],
-            ),
-            Stack(
-              children: [
-                const Column(
-                  children: [],
-                ),
-                Positioned(
-                  right: 30,
-                  bottom: 110,
-                  child: IconButton(
-                    padding: EdgeInsets.all(15),
-                    style: IconButton.styleFrom(
-                      backgroundColor: const Color(0xFF5850EC),
-                    ),
-                    onPressed: () async {
-                      _openBottomSheet();
-                    },
-                    icon: Icon(
-                      Icons.add,
-                      size: 25,
-                    ),
-                  ),
-                ),
-                Positioned(
-                  bottom: 50,
-                  left: 30,
-                  child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
-                    width: 138,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      color: const Color(0xFF5850EC),
-                    ),
-                    child: const Text(
-                      "Tahsilatlar",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  bottom: 50,
-                  right: 30,
-                  child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
-                    width: 138,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      color: const Color(0xFF5850EC),
-                    ),
-                    child: const Text(
-                      "Gün Sonu Hesapla",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                )
-              ],
-            ),
-            Stack(
-              children: [
-                const Column(
-                  children: [],
-                ),
-                Positioned(
-                  right: 30,
-                  bottom: 110,
-                  child: IconButton(
-                    padding: EdgeInsets.all(15),
-                    style: IconButton.styleFrom(
-                      backgroundColor: const Color(0xFF5850EC),
-                    ),
-                    onPressed: () async {
-                      _openBottomSheet();
-                    },
-                    icon: Icon(
-                      Icons.add,
-                      size: 25,
-                    ),
-                  ),
-                ),
-                Positioned(
-                  bottom: 50,
-                  left: 30,
-                  child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
-                    width: 138,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      color: const Color(0xFF5850EC),
-                    ),
-                    child: const Text(
-                      "Tahsilatlar",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  bottom: 50,
-                  right: 30,
-                  child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
-                    width: 138,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      color: const Color(0xFF5850EC),
-                    ),
-                    child: const Text(
-                      "Gün Sonu Hesapla",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                )
-              ],
+            const TahsilEdilen(),
+            TahsilEdilecek(bottomSheet: () => _openBottomSheet()),
+            Giderler(
+              bottomSheet: () => _openBottomSheet(),
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class TahsilEdilecek extends StatelessWidget {
+  final VoidCallback bottomSheet;
+  const TahsilEdilecek({
+    Key? key,
+    required this.bottomSheet,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        const Column(
+          children: [],
+        ),
+        Positioned(
+          right: 30,
+          bottom: 110,
+          child: IconButton(
+            padding: const EdgeInsets.all(15),
+            style: IconButton.styleFrom(
+              backgroundColor: const Color(0xFF5850EC),
+            ),
+            onPressed: bottomSheet,
+            icon: const Icon(
+              Icons.add,
+              size: 25,
+            ),
+          ),
+        ),
+        Positioned(
+          bottom: 50,
+          left: 30,
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+            width: 138,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              color: const Color(0xFF5850EC),
+            ),
+            child: const Text(
+              "Tahsilatlar",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600),
+            ),
+          ),
+        ),
+        Positioned(
+          bottom: 50,
+          right: 30,
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+            width: 138,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              color: const Color(0xFF5850EC),
+            ),
+            child: const Text(
+              "Gün Sonu Hesapla",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600),
+            ),
+          ),
+        )
+      ],
     );
   }
 }
