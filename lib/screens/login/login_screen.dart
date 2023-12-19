@@ -75,7 +75,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Form userForm(
       double ratio, LoginProvider loginProvider, BuildContext context) {
-    Size size = MediaQuery.of(context).size;
     return Form(
       key: loginProvider.formKey,
       child: Column(

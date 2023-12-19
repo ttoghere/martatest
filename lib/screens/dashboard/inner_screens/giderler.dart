@@ -46,46 +46,6 @@ class Giderler extends StatelessWidget {
             ),
           ),
         ),
-        Positioned(
-          bottom: 50,
-          left: 30,
-          child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
-            width: 138,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-              color: const Color(0xFF5850EC),
-            ),
-            child: const Text(
-              "Tahsilatlar",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600),
-            ),
-          ),
-        ),
-        Positioned(
-          bottom: 50,
-          right: 30,
-          child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
-            width: 138,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-              color: const Color(0xFF5850EC),
-            ),
-            child: const Text(
-              "Gün Sonu Hesapla",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600),
-            ),
-          ),
-        )
       ],
     );
   }
