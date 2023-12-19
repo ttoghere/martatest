@@ -3,9 +3,17 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class InvoiceProvider extends ChangeNotifier {
+  String? toplamTutar;
+  String odenenTutar = "0.0";
+  String? kalanTutar;
+  String? otelemeTarihi;
+  String? aciklama;
+  int selectedPaymentOption = 1;
+
   //Fatura Liste
   Future<List<Map<String, dynamic>>> getInvoices(int typeOf) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();

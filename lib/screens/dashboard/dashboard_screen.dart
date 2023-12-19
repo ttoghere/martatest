@@ -2,8 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:martatest/controllers/controllers.dart';
-import 'package:martatest/controllers/profile_provider.dart';
-
 import './inner_screens/inner_screens.dart';
 
 class DashboardMobilScreen extends StatefulWidget {

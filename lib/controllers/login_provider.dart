@@ -7,9 +7,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginProvider extends ChangeNotifier {
   GlobalKey<FormState> formKey = GlobalKey();
-  TextEditingController _kAdiController = TextEditingController();
+  final TextEditingController _kAdiController = TextEditingController();
   TextEditingController get kadiController => _kAdiController;
-  TextEditingController _sifreController = TextEditingController();
+  final TextEditingController _sifreController = TextEditingController();
   TextEditingController get sifreController => _sifreController;
   String? kAdi;
   String? sifre;
