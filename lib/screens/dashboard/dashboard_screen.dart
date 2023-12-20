@@ -59,28 +59,7 @@ class _DashboardMobilScreenState extends State<DashboardMobilScreen>
         appBar: AppBar(
           centerTitle: false,
           leading: const SizedBox.shrink(),
-          toolbarHeight: 100,
-          bottom: TabBar(
-            labelStyle: const TextStyle(
-              fontWeight: FontWeight.w700,
-              fontSize: 16,
-              color: Color(0xFFEDEDED),
-            ),
-            unselectedLabelColor: const Color(0xFFEEEEEE),
-            controller: tabController,
-            indicatorWeight: 4,
-            tabs: const [
-              Tab(
-                text: "Tahsil Edilecek",
-              ),
-              Tab(
-                text: "Erken Tahsilat",
-              ),
-              Tab(
-                text: "Gider",
-              ),
-            ],
-          ),
+          toolbarHeight: 130,
           backgroundColor: const Color(0xFF5850EC),
           flexibleSpace: FutureBuilder<Map<String, dynamic>>(
             future: context.read<ProfileProvider>().getUserProfileInfo(),
@@ -103,9 +82,11 @@ class _DashboardMobilScreenState extends State<DashboardMobilScreen>
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          const SizedBox(
+                            height: 25,
+                          ),
                           Row(
                             children: [
                               GestureDetector(
@@ -184,7 +165,7 @@ class _DashboardMobilScreenState extends State<DashboardMobilScreen>
                             ],
                           ),
                           const SizedBox(
-                            height: 16,
+                            height: 10,
                           ),
                           const Row(
                             children: [
@@ -205,9 +186,20 @@ class _DashboardMobilScreenState extends State<DashboardMobilScreen>
                                   Text(
                                     "Havale",
                                     style: TextStyle(
-                                      color: Color(0xFFEDEDED),
+                                      color: Colors.white,
                                       fontWeight: FontWeight.w700,
-                                      fontSize: 12,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 4,
+                                  ),
+                                  Text(
+                                    "Erken Tahsilat",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 14,
                                     ),
                                   ),
                                 ],
@@ -216,6 +208,7 @@ class _DashboardMobilScreenState extends State<DashboardMobilScreen>
                                 width: 30,
                               ),
                               Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
                                     "Genel Toplam",
@@ -236,6 +229,17 @@ class _DashboardMobilScreenState extends State<DashboardMobilScreen>
                                       fontSize: 14,
                                     ),
                                   ),
+                                  SizedBox(
+                                    height: 4,
+                                  ),
+                                  Text(
+                                    "Erken Tahsilat",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 14,
+                                    ),
+                                  ),
                                 ],
                               ),
                             ],
@@ -249,233 +253,269 @@ class _DashboardMobilScreenState extends State<DashboardMobilScreen>
             },
           ),
         ),
-        body: Stack(
+        body: Column(
           children: [
-            TabBarView(
-              controller: tabController,
-              children: [
-                const TahsilEdilecek(),
-                ErkenTahsil(bottomSheet: () => _openBottomSheet()),
-                Giderler(
-                  bottomSheet: () => _openBottomSheet(),
+            Container(
+              color: const Color(0xFF5850EC),
+              child: TabBar(
+                labelStyle: const TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 12,
+                  color: Color(0xFFEDEDED),
                 ),
-              ],
+                unselectedLabelColor: const Color(0xFFEEEEEE),
+                controller: tabController,
+                indicatorWeight: 4,
+                tabs: const [
+                  Tab(
+                    text: "Tahsil Edilecek",
+                  ),
+                  Tab(
+                    text: "Erken Tahsilat",
+                  ),
+                  Tab(
+                    text: "Gider",
+                  ),
+                ],
+              ),
             ),
-            Positioned(
-              bottom: 50,
-              left: 30,
-              child: GestureDetector(
-                onTap: () {
-                  showModalBottomSheet(
-                    barrierColor: Colors.transparent,
-                    context: context,
-                    isDismissible: false,
-                    builder: (context) => FutureBuilder(
-                      future: context.read<InvoiceProvider>().getInvoices(1),
-                      builder: (context, snapshot) {
-                        var vadesiGelen = 0.0;
-                        var tahsilEdilen = 0.0;
-                        var otelenen = 0.0;
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        } else if (snapshot.hasError) {
-                          return Center(
-                            child: Text('Error: ${snapshot.error}'),
-                          );
-                        } else {
-                          List<Map<String, dynamic>> invoices = snapshot.data!;
-                          for (var v in invoices) {
-                            vadesiGelen += v["net_amount"];
-                          }
-                          for (var v in invoices) {
-                            otelenen += v["outstanding_amount"];
-                          }
-                          for (var v in invoices) {
-                            tahsilEdilen += v["bank_act_amount"];
-                          }
+            Expanded(
+              child: Stack(
+                children: [
+                  TabBarView(
+                    controller: tabController,
+                    children: [
+                      const TahsilEdilecek(),
+                      ErkenTahsil(bottomSheet: () => _openBottomSheet()),
+                      Giderler(
+                        bottomSheet: () => _openBottomSheet(),
+                      ),
+                    ],
+                  ),
+                  Positioned(
+                    bottom: 10,
+                    left: 30,
+                    child: GestureDetector(
+                      onTap: () {
+                        showModalBottomSheet(
+                          barrierColor: Colors.transparent,
+                          context: context,
+                          isDismissible: false,
+                          builder: (context) => FutureBuilder(
+                            future:
+                                context.read<InvoiceProvider>().getInvoices(1),
+                            builder: (context, snapshot) {
+                              var vadesiGelen = 0.0;
+                              var tahsilEdilen = 0.0;
+                              var otelenen = 0.0;
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              } else if (snapshot.hasError) {
+                                return Center(
+                                  child: Text('Error: ${snapshot.error}'),
+                                );
+                              } else {
+                                List<Map<String, dynamic>> invoices =
+                                    snapshot.data!;
+                                for (var v in invoices) {
+                                  vadesiGelen += v["net_amount"];
+                                }
+                                for (var v in invoices) {
+                                  otelenen += v["outstanding_amount"];
+                                }
+                                for (var v in invoices) {
+                                  tahsilEdilen += v["bank_act_amount"];
+                                }
 
-                          return Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 23),
-                            height: 250,
-                            width: double.infinity,
-                            color: Colors.white,
-                            child: Column(
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    const SizedBox.shrink(),
-                                    const Padding(
-                                      padding:
-                                          EdgeInsets.symmetric(vertical: 6),
-                                      child: Text(
-                                        "Tahsilatlar",
-                                        style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w700,
-                                            color: Color(0xFF2D3748)),
+                                return Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 23),
+                                  height: 250,
+                                  width: double.infinity,
+                                  color: Colors.white,
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          const SizedBox.shrink(),
+                                          const Padding(
+                                            padding: EdgeInsets.symmetric(
+                                                vertical: 6),
+                                            child: Text(
+                                              "Tahsilatlar",
+                                              style: TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w700,
+                                                  color: Color(0xFF2D3748)),
+                                            ),
+                                          ),
+                                          IconButton(
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                            icon: const Icon(
+                                              Icons.delete,
+                                              color: Colors.grey,
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                    ),
-                                    IconButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                      icon: const Icon(
-                                        Icons.delete,
-                                        color: Colors.grey,
+                                      const Divider(
+                                        color: Color(0xFFEAEBEC),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                                const Divider(
-                                  color: Color(0xFFEAEBEC),
-                                ),
-                                Row(
-                                  children: [
-                                    const Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        SizedBox(
-                                          height: 40,
-                                        ),
-                                        Text(
-                                          "Vadesi Gelen",
-                                          style: TextStyle(
-                                            color: Color(
-                                              0xFF5850EC,
-                                            ),
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w700,
+                                      Row(
+                                        children: [
+                                          const Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              SizedBox(
+                                                height: 40,
+                                              ),
+                                              Text(
+                                                "Vadesi Gelen",
+                                                style: TextStyle(
+                                                  color: Color(
+                                                    0xFF5850EC,
+                                                  ),
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                height: 20,
+                                              ),
+                                              Text(
+                                                "Tahsil Edilen",
+                                                style: TextStyle(
+                                                  color: Color(
+                                                    0xFF5850EC,
+                                                  ),
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                height: 20,
+                                              ),
+                                              Text(
+                                                "Ötelenen",
+                                                style: TextStyle(
+                                                  color: Color(
+                                                    0xFF5850EC,
+                                                  ),
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                height: 40,
+                                              ),
+                                            ],
                                           ),
-                                        ),
-                                        SizedBox(
-                                          height: 20,
-                                        ),
-                                        Text(
-                                          "Tahsil Edilen",
-                                          style: TextStyle(
-                                            color: Color(
-                                              0xFF5850EC,
-                                            ),
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w700,
+                                          const SizedBox(
+                                            width: 20,
                                           ),
-                                        ),
-                                        SizedBox(
-                                          height: 20,
-                                        ),
-                                        Text(
-                                          "Ötelenen",
-                                          style: TextStyle(
-                                            color: Color(
-                                              0xFF5850EC,
-                                            ),
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w700,
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              const SizedBox(
+                                                height: 35,
+                                              ),
+                                              Text(
+                                                vadesiGelen.toStringAsFixed(2),
+                                                style: const TextStyle(
+                                                    fontSize: 16,
+                                                    color: Colors.black,
+                                                    fontWeight:
+                                                        FontWeight.w700),
+                                              ),
+                                              const SizedBox(
+                                                height: 20,
+                                              ),
+                                              Text(
+                                                tahsilEdilen.toStringAsFixed(2),
+                                                style: const TextStyle(
+                                                    fontSize: 16,
+                                                    color: Colors.black,
+                                                    fontWeight:
+                                                        FontWeight.w700),
+                                              ),
+                                              const SizedBox(
+                                                height: 20,
+                                              ),
+                                              Text(
+                                                otelenen.toStringAsFixed(2),
+                                                style: const TextStyle(
+                                                    fontSize: 16,
+                                                    color: Colors.black,
+                                                    fontWeight:
+                                                        FontWeight.w700),
+                                              ),
+                                              const SizedBox(
+                                                height: 40,
+                                              ),
+                                            ],
                                           ),
-                                        ),
-                                        SizedBox(
-                                          height: 40,
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(
-                                      width: 20,
-                                    ),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        const SizedBox(
-                                          height: 35,
-                                        ),
-                                        Text(
-                                          vadesiGelen.toStringAsFixed(2),
-                                          style: const TextStyle(
-                                              fontSize: 16,
-                                              color: Colors.black,
-                                              fontWeight: FontWeight.w700),
-                                        ),
-                                        const SizedBox(
-                                          height: 20,
-                                        ),
-                                        Text(
-                                          tahsilEdilen.toStringAsFixed(2),
-                                          style: const TextStyle(
-                                              fontSize: 16,
-                                              color: Colors.black,
-                                              fontWeight: FontWeight.w700),
-                                        ),
-                                        const SizedBox(
-                                          height: 20,
-                                        ),
-                                        Text(
-                                          otelenen.toStringAsFixed(2),
-                                          style: const TextStyle(
-                                              fontSize: 16,
-                                              color: Colors.black,
-                                              fontWeight: FontWeight.w700),
-                                        ),
-                                        const SizedBox(
-                                          height: 40,
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          );
-                        }
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }
+                            },
+                          ),
+                        );
                       },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 4),
+                        width: 138,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          color: const Color(0xFF5850EC),
+                        ),
+                        child: const Text(
+                          "Tahsilatlar",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600),
+                        ),
+                      ),
                     ),
-                  );
-                },
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
-                  width: 138,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    color: const Color(0xFF5850EC),
                   ),
-                  child: const Text(
-                    "Tahsilatlar",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600),
-                  ),
-                ),
+                  Positioned(
+                    bottom: 10,
+                    right: 30,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 10, horizontal: 4),
+                      width: 138,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        color: const Color(0xFF5850EC),
+                      ),
+                      child: const Text(
+                        "Gün Sonu Hesapla",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                  )
+                ],
               ),
             ),
-            Positioned(
-              bottom: 50,
-              right: 30,
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
-                width: 138,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  color: const Color(0xFF5850EC),
-                ),
-                child: const Text(
-                  "Gün Sonu Hesapla",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600),
-                ),
-              ),
-            )
           ],
         ),
       ),

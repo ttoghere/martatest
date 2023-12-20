@@ -88,7 +88,7 @@ class _InvoiceListWidgetState extends State<InvoiceListWidget> {
             (netAmount - outstandingAmount).toStringAsFixed(2);
         Color setColor() {
           if (netAmount > double.parse(formattedAmount) &&
-              invoice['outstanding_amount'] == 0.0) {
+              outstandingAmount == 0.0) {
             return const Color(0xFFFF0000);
           } else if (double.parse(formattedAmount) == netAmount) {
             return const Color(0xFF1CC600);
@@ -176,7 +176,7 @@ class _InvoiceListWidgetState extends State<InvoiceListWidget> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '${netAmount}',
+                            '$netAmount',
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
