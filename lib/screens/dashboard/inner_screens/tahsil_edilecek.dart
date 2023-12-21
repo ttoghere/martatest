@@ -51,6 +51,7 @@ class InvoiceListWidget extends StatefulWidget {
 class _InvoiceListWidgetState extends State<InvoiceListWidget> {
   final GlobalKey _formKey = GlobalKey<FormState>();
   TextEditingController _dateController = TextEditingController();
+  TextEditingController _aciklamaController = TextEditingController();
   DateTime _selectedDate = DateTime.now();
 
   Future<void> _selectDate(BuildContext context) async {
@@ -294,6 +295,7 @@ class _InvoiceListWidgetState extends State<InvoiceListWidget> {
                                                       .read<InvoiceProvider>()
                                                       .selectedPaymentOption =
                                                   value!;
+                                              value;
                                             });
                                           },
                                         ),
@@ -313,6 +315,7 @@ class _InvoiceListWidgetState extends State<InvoiceListWidget> {
                                                       .read<InvoiceProvider>()
                                                       .selectedPaymentOption =
                                                   value!;
+                                              value;
                                             });
                                           },
                                         ),
@@ -530,11 +533,7 @@ class _InvoiceListWidgetState extends State<InvoiceListWidget> {
                                     ),
                                     TextFormField(
                                       style: const TextStyle(fontSize: 14),
-                                      onChanged: (value) {
-                                        context
-                                            .read<InvoiceProvider>()
-                                            .aciklama = value;
-                                      },
+                                      controller: _aciklamaController,
                                       decoration: const InputDecoration(
                                         border: InputBorder.none,
                                         hintText: "Açıklama giriniz..",
@@ -558,13 +557,9 @@ class _InvoiceListWidgetState extends State<InvoiceListWidget> {
                                     double.parse(context
                                         .read<InvoiceProvider>()
                                         .odenenTutar),
-                                    context
-                                        .read<InvoiceProvider>()
-                                        .selectedPaymentOption,
-                                    context
-                                        .read<InvoiceProvider>()
-                                        .otelemeTarihi!,
-                                    context.read<InvoiceProvider>().aciklama!);
+                                    1,
+                                    _dateController.text,
+                                    _aciklamaController.text);
                               },
                               child: const Text("Kaydet"),
                             ),

@@ -59,7 +59,7 @@ class _DashboardMobilScreenState extends State<DashboardMobilScreen>
         appBar: AppBar(
           centerTitle: false,
           leading: const SizedBox.shrink(),
-          toolbarHeight: 130,
+          toolbarHeight: 140,
           backgroundColor: const Color(0xFF5850EC),
           flexibleSpace: FutureBuilder<Map<String, dynamic>>(
             future: context.read<ProfileProvider>().getUserProfileInfo(),
@@ -82,6 +82,7 @@ class _DashboardMobilScreenState extends State<DashboardMobilScreen>
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const SizedBox(
@@ -258,9 +259,11 @@ class _DashboardMobilScreenState extends State<DashboardMobilScreen>
             Container(
               color: const Color(0xFF5850EC),
               child: TabBar(
+                indicatorColor: Colors.white,
+                padding: EdgeInsets.zero,
                 labelStyle: const TextStyle(
                   fontWeight: FontWeight.w700,
-                  fontSize: 12,
+                  fontSize: 13,
                   color: Color(0xFFEDEDED),
                 ),
                 unselectedLabelColor: const Color(0xFFEEEEEE),

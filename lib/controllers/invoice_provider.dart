@@ -138,18 +138,19 @@ class InvoiceProvider extends ChangeNotifier {
       headers: headers,
       body: json.encode(requestBody),
     );
-
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseData = json.decode(response.body);
       if (responseData['error'] == false) {
-        log('Invoice payment successful.');
+        log('Fatura ödeme başarılı.');
       } else {
+        log('Fatura ödeme başarısız. Mesaj: ${responseData['message']}');
         throw Exception(
-            'Invoice payment failed. Message: ${responseData['message']}');
+            'Fatura ödeme başarısız. Mesaj: ${responseData['message']}');
       }
     } else {
+      log('HTTP isteği, durum koduyla başarısız oldu: ${response.statusCode}');
       throw Exception(
-          'HTTP request failed with status: ${response.statusCode}');
+          'HTTP isteği, durum koduyla başarısız oldu: ${response.statusCode}');
     }
   }
 
