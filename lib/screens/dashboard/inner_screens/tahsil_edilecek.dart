@@ -206,8 +206,8 @@ class _InvoiceListWidgetState extends State<InvoiceListWidget> {
         backgroundColor: Colors.transparent,
         context: context,
         builder: (context) {
-          return Center(
-            child: Container(
+          return StatefulBuilder(
+            builder: (context, setState) => Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15),
                 color: Colors.white,
@@ -566,28 +566,5 @@ class _InvoiceListWidgetState extends State<InvoiceListWidget> {
             ),
           );
         });
-    // return showDialog(
-    //   context: context,
-    //   builder: (context) {
-    //     return AlertDialog(
-    //       title: const Text('Details'),
-    //       content: Column(
-    //         crossAxisAlignment: CrossAxisAlignment.start,
-    //         children: [
-    //           Text('Customer ID: ${invoice['customer_id']}'),
-    //           Text('Due Date: ${invoice['due_date']}'),
-    //         ],
-    //       ),
-    //       actions: [
-    //         TextButton(
-    //           onPressed: () {
-    //             Navigator.pop(context);
-    //           },
-    //           child: const Text('Close'),
-    //         ),
-    //       ],
-    //     );
-    //   },
-    // );
   }
 }

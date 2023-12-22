@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:martatest/screens/screens.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginProvider extends ChangeNotifier {
@@ -51,5 +52,17 @@ class LoginProvider extends ChangeNotifier {
       throw Exception(
           'HTTP request failed with status: ${response.statusCode}');
     }
+  }
+
+  Future<void> logoutUser(BuildContext context) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs
+        .remove('access_token')
+        .whenComplete(() => Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (context) => LoginScreen(adaptiveRatio: 1),
+              ),
+            ));
+    notifyListeners();
   }
 }

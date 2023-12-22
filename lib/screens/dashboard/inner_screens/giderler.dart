@@ -328,10 +328,8 @@ class _ExpenseListWidgetState extends State<ExpenseListWidget> {
   bool change2 = false;
 
   int typeOf = 1;
-
-  String gAciklama = "";
-
-  String gTutar = "";
+  TextEditingController gTutarController = TextEditingController();
+  TextEditingController gAciklamaController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -534,7 +532,8 @@ class _ExpenseListWidgetState extends State<ExpenseListWidget> {
                                               expense["amount"].toString(),
                                           onChanged: (value) {
                                             setState(() {
-                                              gTutar = value;
+                                              expense["amount"] =
+                                                  double.parse(value);
                                             });
                                           },
                                           decoration: const InputDecoration(
@@ -583,7 +582,7 @@ class _ExpenseListWidgetState extends State<ExpenseListWidget> {
                                         child: TextFormField(
                                           onChanged: (value) {
                                             setState(() {
-                                              gAciklama = value;
+                                              expense["description"] = value;
                                             });
                                           },
                                           initialValue: expense["description"],
@@ -609,9 +608,9 @@ class _ExpenseListWidgetState extends State<ExpenseListWidget> {
                                     await context
                                         .read<ExpensesProvider>()
                                         .updateExpense(
-                                            description: gAciklama!,
+                                            description: expense["description"],
                                             id: expense["expense_id"],
-                                            amount: double.parse(gTutar))
+                                            amount: expense["amount"])
                                         .whenComplete(
                                             () => Navigator.of(context).pop());
                                   },

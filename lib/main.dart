@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:martatest/controllers/controllers.dart';
+import 'package:martatest/screens/foy_screen.dart';
 import 'package:martatest/screens/screens.dart';
 import 'package:provider/provider.dart';
 
@@ -39,8 +40,8 @@ class MyApp extends StatelessWidget {
         ),
         home: const LoginScreen(adaptiveRatio: 1),
         routes: {
-          DashboardMobilScreen.routeName: (context) =>
-              const DashboardMobilScreen(),
+          DashboardMobilScreen.routeName: (context) => DashboardMobilScreen(),
+          FoySayfasi.routeName: (context) => FoySayfasi(),
         },
       ),
     );

@@ -1,5 +1,6 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
+// ignore_for_file: public_member_api_docs, sort_constructors_first, unnecessary_string_interpolations
 import 'package:flutter/material.dart';
+import 'package:martatest/screens/foy_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:martatest/controllers/controllers.dart';
 import './inner_screens/inner_screens.dart';
@@ -91,7 +92,33 @@ class _DashboardMobilScreenState extends State<DashboardMobilScreen>
                           Row(
                             children: [
                               GestureDetector(
-                                onTap: () {},
+                                onTap: () {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) => AlertDialog(
+                                            title: const Text(
+                                                "Çıkmak istediğinize emin misiniz ?"),
+                                            content: Row(
+                                              children: [
+                                                IconButton(
+                                                  onPressed: () {
+                                                    context
+                                                        .read<LoginProvider>()
+                                                        .logoutUser(context);
+                                                  },
+                                                  icon: const Icon(
+                                                      Icons.exit_to_app),
+                                                ),
+                                                IconButton(
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                  icon: const Icon(Icons.list),
+                                                ),
+                                              ],
+                                            ),
+                                          ));
+                                },
                                 child: Image.asset(
                                   "assets/ic_toggle.png",
                                   height: 15,
@@ -168,82 +195,119 @@ class _DashboardMobilScreenState extends State<DashboardMobilScreen>
                           const SizedBox(
                             height: 10,
                           ),
-                          const Row(
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "Genel Toplam",
-                                    style: TextStyle(
-                                      color: Color(0xFFEDEDED),
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 12,
+                          FutureBuilder(
+                            future:
+                                context.read<InvoiceProvider>().getInvoices(1),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              } else if (snapshot.hasError) {
+                                return Center(
+                                  child: Text('Error: ${snapshot.error}'),
+                                );
+                              } else {
+                                List<Map<String, dynamic>> invoices =
+                                    snapshot.data!;
+                                var genelToplam = 0.0;
+                                double havale = 0.0;
+                                var erkenTahsilat = 0.0;
+                                var otelenen = 0.0;
+
+                                for (var v in invoices) {
+                                  havale += v["bank_act_amount"];
+                                }
+                                for (var v in invoices) {
+                                  genelToplam += v["net_amount"];
+                                }
+
+                                for (var v in invoices) {
+                                  otelenen += v["outstanding_amount"];
+                                }
+                                erkenTahsilat = genelToplam - otelenen - havale;
+                                return Row(
+                                  children: [
+                                    const Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "Genel Toplam",
+                                          style: TextStyle(
+                                            color: Color(0xFFEDEDED),
+                                            fontWeight: FontWeight.w700,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          height: 4,
+                                        ),
+                                        Text(
+                                          "Havale",
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w700,
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          height: 4,
+                                        ),
+                                        Text(
+                                          "Erken Tahsilat",
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w700,
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ),
-                                  SizedBox(
-                                    height: 4,
-                                  ),
-                                  Text(
-                                    "Havale",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 14,
+                                    const SizedBox(
+                                      width: 30,
                                     ),
-                                  ),
-                                  SizedBox(
-                                    height: 4,
-                                  ),
-                                  Text(
-                                    "Erken Tahsilat",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 14,
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "${genelToplam.toStringAsFixed(2)}\$",
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w700,
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 4,
+                                        ),
+                                        Text(
+                                          "${havale.toStringAsFixed(2)}\$",
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w700,
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 4,
+                                        ),
+                                        Text(
+                                          "${erkenTahsilat.toStringAsFixed(2)}",
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w700,
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(
-                                width: 30,
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "Genel Toplam",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: 4,
-                                  ),
-                                  Text(
-                                    "Havale",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: 4,
-                                  ),
-                                  Text(
-                                    "Erken Tahsilat",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
+                                  ],
+                                );
+                              }
+                            },
                           ),
                         ],
                       ),
@@ -499,21 +563,26 @@ class _DashboardMobilScreenState extends State<DashboardMobilScreen>
                   Positioned(
                     bottom: 10,
                     right: 30,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 10, horizontal: 4),
-                      width: 138,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        color: const Color(0xFF5850EC),
-                      ),
-                      child: const Text(
-                        "Gün Sonu Hesapla",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).pushNamed(FoySayfasi.routeName);
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 4),
+                        width: 138,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          color: const Color(0xFF5850EC),
+                        ),
+                        child: const Text(
+                          "Gün Sonu Hesapla",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600),
+                        ),
                       ),
                     ),
                   )

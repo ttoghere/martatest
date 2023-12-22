@@ -86,8 +86,8 @@ class ExpensesProvider extends ChangeNotifier {
       required int id,
       required double amount}) async {
     // Replace with your actual URLs
-    final String localUrl = 'http://127.0.0.1:5061/v1/mobile/expenses';
-    final String remoteUrl =
+    const String localUrl = 'http://127.0.0.1:5061/v1/mobile/expenses';
+    const String remoteUrl =
         'https://test.guzelasistan.com/core/v1/mobile/expenses';
 
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -112,14 +112,14 @@ class ExpensesProvider extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = jsonDecode(response.body);
-        print('Update successful:');
-        print(responseData);
+        log('Update successful:');
+        log(responseData.toString());
       } else {
-        print('Failed to update expense. Status code: ${response.statusCode}');
-        print('Response body: ${response.body}');
+        log('Failed to update expense. Status code: ${response.statusCode}');
+        log('Response body: ${response.body}');
       }
     } catch (e) {
-      print('Error during the update process: $e');
+      log('Error during the update process: $e');
     }
   }
 
