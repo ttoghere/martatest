@@ -24,8 +24,11 @@ class ExpensesProvider extends ChangeNotifier {
     );
 
     if (response.statusCode == 200) {
-      final Map<String, dynamic> responseData = json.decode(response.body);
+      final Map<String, dynamic> responseData =
+          json.decode(utf8.decode(response.bodyBytes));
       final List<dynamic> expenses = responseData['data'] ?? [];
+      notifyListeners();
+
       return expenses;
     } else {
       throw Exception(
@@ -34,68 +37,89 @@ class ExpensesProvider extends ChangeNotifier {
   }
 
   //Harcama Ekleme
-  Future<Map<String, dynamic>> addExpense(
-      int leafletId, double amount, String description) async {
+  Future<void> addExpense(
+      {required double amount,
+      required int leafletId,
+      required String description,
+      required int typeOf}) async {
+    const String apiUrl =
+        'https://test.guzelasistan.com/core/v1/mobile/expenses';
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String token = prefs.getString('access_token') ?? '';
-
-    const String url = 'https://test.guzelasistan.com/core/v1/mobile/expenses';
-    final Map<String, String> headers = {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',
+    final Map<String, dynamic> requestData = {
+      'leaflet_id': leafletId,
+      'amount': amount,
+      'description': description,
+      'type_of': typeOf,
     };
 
-    final Map<String, dynamic> requestBody = {
-      "leaflet_id": leafletId,
-      "amount": amount,
-      "description": description,
-    };
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode(requestData),
+      );
 
-    final http.Response response = await http.post(
-      Uri.parse(url),
-      headers: headers,
-      body: json.encode(requestBody),
-    );
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData =
+            json.decode(utf8.decode(response.bodyBytes));
 
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> responseData = json.decode(response.body);
-      return responseData;
-    } else {
-      throw Exception(
-          'HTTP request failed with status: ${response.statusCode}');
+        // Handle the response data as needed
+        log('Response Data: $responseData');
+      } else {
+        // Handle the error
+        log('HTTP request failed with status: ${response.statusCode}');
+        log('Error Message: ${response.body}');
+      }
+    } catch (error) {
+      // Handle the exception
+      log('An error occurred: $error');
     }
+    notifyListeners();
   }
 
-  //Harcama Güncelleme
-  Future<Map<String, dynamic>> updateExpense(
-      int expenseId, double amount, String description) async {
+  Future<void> updateExpense(
+      {required String description,
+      required int id,
+      required double amount}) async {
+    // Replace with your actual URLs
+    final String localUrl = 'http://127.0.0.1:5061/v1/mobile/expenses';
+    final String remoteUrl =
+        'https://test.guzelasistan.com/core/v1/mobile/expenses';
+
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String token = prefs.getString('access_token') ?? '';
-
-    const String url = 'https://test.guzelasistan.com/core/v1/mobile/expenses';
-    final Map<String, String> headers = {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',
-    };
-
-    final Map<String, dynamic> requestBody = {
-      "expense_id": expenseId,
+    // Replace with your actual expense data
+    final Map<String, dynamic> expenseData = {
+      "expense_id": id,
       "amount": amount,
       "description": description,
+      "type_of": 1,
     };
 
-    final http.Response response = await http.patch(
-      Uri.parse(url),
-      headers: headers,
-      body: json.encode(requestBody),
-    );
+    try {
+      final http.Response response = await http.patch(
+        Uri.parse(remoteUrl),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode(expenseData),
+      );
 
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> responseData = json.decode(response.body);
-      return responseData;
-    } else {
-      throw Exception(
-          'HTTP request failed with status: ${response.statusCode}');
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = jsonDecode(response.body);
+        print('Update successful:');
+        print(responseData);
+      } else {
+        print('Failed to update expense. Status code: ${response.statusCode}');
+        print('Response body: ${response.body}');
+      }
+    } catch (e) {
+      print('Error during the update process: $e');
     }
   }
 
@@ -117,7 +141,8 @@ class ExpensesProvider extends ChangeNotifier {
     );
 
     if (response.statusCode == 200) {
-      final Map<String, dynamic> responseData = json.decode(response.body);
+      final Map<String, dynamic> responseData =
+          json.decode(utf8.decode(response.bodyBytes));
       if (responseData['error'] == false) {
         log('Expense removed successfully.');
       } else {
@@ -128,5 +153,6 @@ class ExpensesProvider extends ChangeNotifier {
       throw Exception(
           'HTTP request failed with status: ${response.statusCode}');
     }
+    notifyListeners();
   }
 }

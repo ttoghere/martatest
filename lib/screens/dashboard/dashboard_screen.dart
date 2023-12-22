@@ -259,8 +259,11 @@ class _DashboardMobilScreenState extends State<DashboardMobilScreen>
             Container(
               color: const Color(0xFF5850EC),
               child: TabBar(
+                indicatorSize: TabBarIndicatorSize.tab,
                 indicatorColor: Colors.white,
                 padding: EdgeInsets.zero,
+                labelPadding: EdgeInsets.zero,
+                indicatorPadding: EdgeInsets.zero,
                 labelStyle: const TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: 13,
@@ -290,9 +293,7 @@ class _DashboardMobilScreenState extends State<DashboardMobilScreen>
                     children: [
                       const TahsilEdilecek(),
                       ErkenTahsil(bottomSheet: () => _openBottomSheet()),
-                      Giderler(
-                        bottomSheet: () => _openBottomSheet(),
-                      ),
+                      const Giderler(),
                     ],
                   ),
                   Positioned(

@@ -58,7 +58,7 @@ class _InvoiceListWidgetState extends State<InvoiceListWidget> {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: _selectedDate,
-      firstDate: DateTime(2000),
+      firstDate: DateTime.now(),
       lastDate: DateTime(2101),
     );
     if (picked != null && picked != _selectedDate) {
@@ -73,7 +73,7 @@ class _InvoiceListWidgetState extends State<InvoiceListWidget> {
   void initState() {
     super.initState();
     _dateController.text =
-        '${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}';
+        '${_selectedDate.year}-${_selectedDate.month}-${_selectedDate.day}';
   }
 
   @override
@@ -89,7 +89,7 @@ class _InvoiceListWidgetState extends State<InvoiceListWidget> {
             (netAmount - outstandingAmount).toStringAsFixed(2);
         Color setColor() {
           if (netAmount > double.parse(formattedAmount) &&
-              outstandingAmount == 0.0) {
+              netAmount == outstandingAmount) {
             return const Color(0xFFFF0000);
           } else if (double.parse(formattedAmount) == netAmount) {
             return const Color(0xFF1CC600);
@@ -99,18 +99,6 @@ class _InvoiceListWidgetState extends State<InvoiceListWidget> {
           return Colors.black;
         }
 
-// Şimdi formattedAmount değişkeni, netAmount ve outstandingAmount'ın farkı olan bir ondalık sayıyı iki ondalık basamakla birlikte içeren bir string olacaktır.
-
-        // return Card(
-        //   margin: const EdgeInsets.all(8.0),
-        //   child: ListTile(
-        // title: Text('Customer: ${invoice['customer_title']}'),
-        // subtitle: Text('Amount: ${netAmount}'),
-        //     onTap: () {
-        //       dialog(context, invoice);
-        //     },
-        //   ),
-        // );
         return GestureDetector(
           onTap: () => dialog(context, invoice),
           child: Padding(
@@ -177,7 +165,7 @@ class _InvoiceListWidgetState extends State<InvoiceListWidget> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '$netAmount',
+                            '$netAmount \$',
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
@@ -185,7 +173,7 @@ class _InvoiceListWidgetState extends State<InvoiceListWidget> {
                             ),
                           ),
                           Text(
-                            formattedAmount,
+                            "$formattedAmount \$",
                             style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
@@ -193,7 +181,7 @@ class _InvoiceListWidgetState extends State<InvoiceListWidget> {
                             ),
                           ),
                           Text(
-                            '${invoice['outstanding_amount']}',
+                            '$outstandingAmount \$',
                             style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
@@ -295,7 +283,6 @@ class _InvoiceListWidgetState extends State<InvoiceListWidget> {
                                                       .read<InvoiceProvider>()
                                                       .selectedPaymentOption =
                                                   value!;
-                                              value;
                                             });
                                           },
                                         ),
@@ -315,7 +302,6 @@ class _InvoiceListWidgetState extends State<InvoiceListWidget> {
                                                       .read<InvoiceProvider>()
                                                       .selectedPaymentOption =
                                                   value!;
-                                              value;
                                             });
                                           },
                                         ),
@@ -552,14 +538,21 @@ class _InvoiceListWidgetState extends State<InvoiceListWidget> {
                           Center(
                             child: ElevatedButton(
                               onPressed: () {
-                                context.read<InvoiceProvider>().payInvoice(
-                                    invoice["invoice_id"],
-                                    double.parse(context
-                                        .read<InvoiceProvider>()
-                                        .odenenTutar),
-                                    1,
-                                    _dateController.text,
-                                    _aciklamaController.text);
+                                context
+                                    .read<InvoiceProvider>()
+                                    .payInvoice(
+                                      invoiceId: invoice["invoice_id"],
+                                      amount: double.parse(context
+                                          .read<InvoiceProvider>()
+                                          .odenenTutar),
+                                      paymentType: context
+                                          .read<InvoiceProvider>()
+                                          .selectedPaymentOption,
+                                      postponementDate: _dateController.text,
+                                      description: _aciklamaController.text,
+                                    )
+                                    .whenComplete(
+                                        () => Navigator.of(context).pop());
                               },
                               child: const Text("Kaydet"),
                             ),
