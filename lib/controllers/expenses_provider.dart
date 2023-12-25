@@ -43,6 +43,7 @@ class ExpensesProvider extends ChangeNotifier {
   }
 
   //Harcama Ekleme
+// Harcama Ekleme
   Future<void> addExpenseToFirestore({
     required String amount,
     required String description,
@@ -60,13 +61,26 @@ class ExpensesProvider extends ChangeNotifier {
       };
 
       // Firestore'daki 'expenses' koleksiyonuna haritayı ekle
-      await FirebaseFirestore.instance.collection('expenses').add(newExpense);
-    } catch (e) {}
+      DocumentReference documentReference = await FirebaseFirestore.instance
+          .collection('expenses')
+          .add(newExpense);
+
+      // Eklenen belgenin kimliğini al
+      String documentId = documentReference.id;
+
+      // Belgeye alınan kimliği atama
+      newExpense['id'] = documentId;
+
+      // Firestore'daki 'expenses' koleksiyonundaki belgeyi güncelle
+      await documentReference.update({'id': documentId});
+    } catch (e) {
+      print('Hata: $e');
+    }
   }
 
   Future<void> updateExpense({
     required String expenseId,
-    required double newAmount,
+    required int newAmount,
     required String newDescription,
     required int newTypeOf,
   }) async {

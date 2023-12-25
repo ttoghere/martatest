@@ -282,12 +282,6 @@ class _GiderlerState extends State<Giderler> {
                             .read<ExpensesProvider>()
                             .fetchExpenses()
                             .whenComplete(() => Navigator.of(context).pop());
-                        // .addExpenseToFirestore(
-                        //     typeOf: typeOf,
-                        //     amount:
-                        //         double.parse(_tutarEditingController.text),
-                        //     leafletId: 1,
-                        //     description: _aciklamaEditingController.text)
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF5850EC),
@@ -561,7 +555,7 @@ class _ExpenseListWidgetState extends State<ExpenseListWidget> {
                                           onChanged: (value) {
                                             setState(() {
                                               expense["amount"] =
-                                                  double.parse(value);
+                                                  int.parse(value);
                                             });
                                           },
                                           decoration: const InputDecoration(
@@ -633,16 +627,24 @@ class _ExpenseListWidgetState extends State<ExpenseListWidget> {
                                 ),
                                 ElevatedButton(
                                   onPressed: () async {
-                                    await context
-                                        .read<ExpensesProvider>()
-                                        .updateExpense(
+                                    if (expense["amount"] != null &&
+                                        expense["description"] != null &&
+                                        expense["typeOf"] != null) {
+                                      await context
+                                          .read<ExpensesProvider>()
+                                          .updateExpense(
                                             expenseId: expense["id"],
                                             newAmount: expense["amount"],
                                             newDescription:
                                                 expense["description"],
-                                            newTypeOf: expense["typeOf"])
-                                        .whenComplete(
-                                            () => Navigator.of(context).pop());
+                                            newTypeOf: expense["typeOf"],
+                                          )
+                                          .whenComplete(() =>
+                                              Navigator.of(context).pop());
+                                    } else {
+                                      // Gerekli değerlerden biri veya daha fazlası null ise bir hata işle
+                                      print("Hata: Gerekli değerler null.");
+                                    }
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: const Color(0xFF5850EC),

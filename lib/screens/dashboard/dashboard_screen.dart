@@ -43,33 +43,6 @@ class _DashboardMobilScreenState extends State<DashboardMobilScreen>
 
   // Alt sayfanın açılıp kapanmasını kontrol etmek için bir GlobalKey kullanılır.
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
-  void _openBottomSheet() {
-    // Alt sayfayı açar.
-    _scaffoldKey.currentState!.showBottomSheet(
-      (BuildContext context) {
-        return Container(
-          // Alt sayfanın içeriği buraya gelir.
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              const Text('Alt Sayfa İçeriği'),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () {
-                  // Alt sayfayı kapatır.
-                  Navigator.pop(context);
-                },
-                child: const Text('Alt Sayfayı Kapat'),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -79,10 +52,10 @@ class _DashboardMobilScreenState extends State<DashboardMobilScreen>
         appBar: AppBar(
           centerTitle: false,
           leading: const SizedBox.shrink(),
-          toolbarHeight: 140,
+          toolbarHeight: 100,
           backgroundColor: const Color(0xFF5850EC),
           flexibleSpace: Padding(
-            padding: const EdgeInsets.only(left: 16),
+            padding: const EdgeInsets.only(left: 16, top: 25),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -361,7 +334,7 @@ class _DashboardMobilScreenState extends State<DashboardMobilScreen>
                     controller: tabController,
                     children: [
                       const TahsilEdilecek(),
-                      ErkenTahsil(bottomSheet: () => _openBottomSheet()),
+                      ErkenTahsil(bottomSheet: () {}),
                       const Giderler(),
                     ],
                   ),
