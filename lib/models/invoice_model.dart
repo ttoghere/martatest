@@ -1,55 +1,90 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Invoice {
-  final int invoiceId;
-  final int territoryId;
-  final int customerId;
+  final int amount;
+  final int bankActAmount;
   final String customerCode;
+  final int customerId;
   final String customerTitle;
-  final String invoiceCode;
-  final double netAmount;
-  final double outstandingAmount;
-  final int termDay;
-  final String issueDate;
-  final String dueDate;
-  final String postponementDate;
-  final bool hasBankAct;
-  final double bankActAmount;
   final Map<String, dynamic> details;
+  final String description;
+  final String dueDate;
+  final int paymentType;
+  final String id;
+  final String invoiceCode;
+  final int invoiceId;
+  final String issueDate;
+  final int netAmount;
+  final int outstandingAmount;
+  final String postponementDate;
+  final int termDay;
+  final int territoryId;
 
   Invoice({
-    required this.invoiceId,
-    required this.territoryId,
-    required this.customerId,
+    required this.amount,
+    required this.bankActAmount,
     required this.customerCode,
+    required this.customerId,
     required this.customerTitle,
+    required this.details,
+    required this.description,
+    required this.dueDate,
+    required this.paymentType,
+    required this.id,
     required this.invoiceCode,
+    required this.invoiceId,
+    required this.issueDate,
     required this.netAmount,
     required this.outstandingAmount,
-    required this.termDay,
-    required this.issueDate,
-    required this.dueDate,
     required this.postponementDate,
-    required this.hasBankAct,
-    required this.bankActAmount,
-    required this.details,
+    required this.termDay,
+    required this.territoryId,
   });
 
   factory Invoice.fromJson(Map<String, dynamic> json) {
     return Invoice(
-      invoiceId: json['invoice_id'],
-      territoryId: json['territory_id'],
-      customerId: json['customer_id'],
-      customerCode: json['customer_code'],
-      customerTitle: json['customer_title'],
-      invoiceCode: json['invoice_code'],
-      netAmount: json['net_amount'],
-      outstandingAmount: json['outstanding_amount'],
-      termDay: json['term_day'],
-      issueDate: json['issue_date'],
-      dueDate: json['due_date'],
-      postponementDate: json['postponement_date'],
-      hasBankAct: json['has_bank_act'],
-      bankActAmount: json['bank_act_amount'],
-      details: json['details'],
+      amount: json['amount'] ?? 0,
+      bankActAmount: json['bank_act_amount'] ?? 0,
+      customerCode: json['customerCode'] ?? "",
+      customerId: json['customerId'] ?? 0,
+      customerTitle: json['customerTitle'] ?? "",
+      details: json['details'] ?? <String, dynamic>{},
+      description: json['description'] ?? "",
+      dueDate: json['dueDate'] ?? "",
+      paymentType: json['paymentType'] ?? 0,
+      id: json['id'] ?? "",
+      invoiceCode: json['invoiceCode'] ?? "",
+      invoiceId: json['invoiceId'] ?? 0,
+      issueDate: json['issueDate'] ?? "",
+      netAmount: json['netAmount'] ?? 0,
+      outstandingAmount: json['outstandingAmount'] ?? 0,
+      postponementDate: json['postponementDate'] ?? "",
+      termDay: json['termDay'] ?? 0,
+      territoryId: json['territoryId'] ?? 0,
+    );
+  }
+
+  factory Invoice.fromSnapshot(DocumentSnapshot snapshot) {
+    Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+    return Invoice(
+      amount: data['amount'] ?? 0,
+      bankActAmount: data['bank_act_amount'] ?? 0,
+      customerCode: data['customerCode'] ?? "",
+      customerId: data['customerId'] ?? 0,
+      customerTitle: data['customerTitle'] ?? "",
+      details: data['details'] ?? <String, dynamic>{},
+      description: data['description'] ?? "",
+      dueDate: data['dueDate'] ?? "",
+      paymentType: data['paymentType'] ?? 0,
+      id: data['id'] ?? "",
+      invoiceCode: data['invoiceCode'] ?? "",
+      invoiceId: data['invoiceId'] ?? 0,
+      issueDate: data['issueDate'] ?? "",
+      netAmount: data['netAmount'] ?? 0,
+      outstandingAmount: data['outstandingAmount'] ?? 0,
+      postponementDate: data['postponementDate'] ?? "",
+      termDay: data['termDay'] ?? 0,
+      territoryId: data['territoryId'] ?? 0,
     );
   }
 }

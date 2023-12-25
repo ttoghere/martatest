@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -13,69 +14,90 @@ class InvoiceProvider extends ChangeNotifier {
   String? aciklama;
   int selectedPaymentOption = 1;
 
-  Future<List<Map<String, dynamic>>> getInvoices(int typeOf) async {
+  Future<List<Map<String, dynamic>>> fetchInvoices() async {
     try {
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
-      final String token = prefs.getString('access_token') ?? '';
+      QuerySnapshot<Map<String, dynamic>> querySnapshot =
+          await FirebaseFirestore.instance.collection('invoices').get();
 
-      final String url =
-          'https://test.guzelasistan.com/core/v1/mobile/invoices/$typeOf';
-      final Map<String, String> headers = {
-        'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization': 'Bearer $token',
-      };
+      // Belge listesini alın
+      List<QueryDocumentSnapshot<Map<String, dynamic>>> documents =
+          querySnapshot.docs;
 
-      final http.Response response = await http.get(
-        Uri.parse(url),
-        headers: headers,
-      );
+      // Belge verilerini işleyip geri döndürün
+      List<Map<String, dynamic>> invoices =
+          documents.map((document) => document.data()).toList();
 
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> responseData =
-            json.decode(utf8.decode(response.bodyBytes));
-        final List<dynamic> invoices = responseData['data'];
-
-        List<Map<String, dynamic>> formattedInvoices = [];
-        for (var invoice in invoices) {
-          Map<String, dynamic> formattedInvoice = {
-            'invoice_id': invoice['invoice_id'],
-            'territory_id': invoice['territory_id'],
-            'customer_id': invoice['customer_id'],
-            'customer_code': invoice['customer_code'],
-            'customer_title': invoice['customer_title'],
-            'invoice_code': invoice['invoice_code'],
-            'net_amount': invoice['net_amount'],
-            'outstanding_amount': invoice['outstanding_amount'],
-            'term_day': invoice['term_day'],
-            'issue_date': invoice['issue_date'],
-            'due_date': invoice['due_date'],
-            'postponement_date': invoice['postponement_date'],
-            'has_bank_act': invoice['has_bank_act'],
-            'bank_act_amount': invoice['bank_act_amount'],
-            'details': {
-              'description': invoice['details'] != null
-                  ? invoice['details']['description']
-                  : null,
-              'due_date_details': invoice['details'] != null
-                  ? invoice['details']['due_date']
-                  : null,
-              'payment_type': invoice['details'] != null
-                  ? invoice['details']['payment_type']
-                  : null,
-            },
-          };
-          formattedInvoices.add(formattedInvoice);
-        }
-
-        return formattedInvoices;
-      } else {
-        throw Exception(
-            'HTTP request failed with status: ${response.statusCode}');
-      }
+      return invoices;
     } catch (e) {
-      throw Exception('An error occurred: $e');
+      // Hata durumunda isteğe bağlı olarak işlemler yapabilirsiniz
+      log('Veri çekme işlemi başarısız oldu: $e');
+      return [];
     }
   }
+
+  // Future<List<Map<String, dynamic>>> getInvoices(int typeOf) async {
+  //   try {
+  //     final SharedPreferences prefs = await SharedPreferences.getInstance();
+  //     final String token = prefs.getString('access_token') ?? '';
+
+  //     final String url =
+  //         'https://test.guzelasistan.com/core/v1/mobile/invoices/$typeOf';
+  //     final Map<String, String> headers = {
+  //       'Content-Type': 'application/json; charset=UTF-8',
+  //       'Authorization': 'Bearer $token',
+  //     };
+
+  //     final http.Response response = await http.get(
+  //       Uri.parse(url),
+  //       headers: headers,
+  //     );
+
+  //     if (response.statusCode == 200) {
+  //       final Map<String, dynamic> responseData =
+  //           json.decode(utf8.decode(response.bodyBytes));
+  //       final List<dynamic> invoices = responseData['data'];
+
+  //       List<Map<String, dynamic>> formattedInvoices = [];
+  //       for (var invoice in invoices) {
+  //         Map<String, dynamic> formattedInvoice = {
+  //           'invoice_id': invoice['invoice_id'],
+  //           'territory_id': invoice['territory_id'],
+  //           'customer_id': invoice['customer_id'],
+  //           'customer_code': invoice['customer_code'],
+  //           'customer_title': invoice['customer_title'],
+  //           'invoice_code': invoice['invoice_code'],
+  //           'net_amount': invoice['net_amount'],
+  //           'outstanding_amount': invoice['outstanding_amount'],
+  //           'term_day': invoice['term_day'],
+  //           'issue_date': invoice['issue_date'],
+  //           'due_date': invoice['due_date'],
+  //           'postponement_date': invoice['postponement_date'],
+  //           'has_bank_act': invoice['has_bank_act'],
+  //           'bank_act_amount': invoice['bank_act_amount'],
+  //           'details': {
+  //             'description': invoice['details'] != null
+  //                 ? invoice['details']['description']
+  //                 : null,
+  //             'due_date_details': invoice['details'] != null
+  //                 ? invoice['details']['due_date']
+  //                 : null,
+  //             'payment_type': invoice['details'] != null
+  //                 ? invoice['details']['payment_type']
+  //                 : null,
+  //           },
+  //         };
+  //         formattedInvoices.add(formattedInvoice);
+  //       }
+
+  //       return formattedInvoices;
+  //     } else {
+  //       throw Exception(
+  //           'HTTP request failed with status: ${response.statusCode}');
+  //     }
+  //   } catch (e) {
+  //     throw Exception('An error occurred: $e');
+  //   }
+  // }
 
   //Fatura Erken Ödeme
   Future<void> payInvoiceEarly(

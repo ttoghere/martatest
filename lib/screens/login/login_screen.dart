@@ -190,8 +190,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   bool validation =
                       loginProvider.formKey.currentState!.validate();
                   if (validation) {
-                    await loginProvider.loginUser(
-                        loginProvider.kAdi!, loginProvider.sifre!);
+                    await loginProvider.logIn(loginProvider.kadiController.text,
+                        loginProvider.sifreController.text, context);
                     Navigator.of(context)
                         .pushNamed(DashboardMobilScreen.routeName);
                   } else {

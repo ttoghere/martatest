@@ -17,7 +17,7 @@ class _TahsilEdilecekState extends State<TahsilEdilecek> {
     return Stack(
       children: [
         FutureBuilder(
-          future: context.read<InvoiceProvider>().getInvoices(1),
+          future: context.read<InvoiceProvider>().fetchInvoices(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(
@@ -82,9 +82,11 @@ class _InvoiceListWidgetState extends State<InvoiceListWidget> {
       itemCount: widget.invoices.length,
       itemBuilder: (context, index) {
         final invoice = widget.invoices[index];
-        double netAmount = invoice['net_amount'];
-        double outstandingAmount = invoice['outstanding_amount'];
+        int netAmount = invoice['netAmount'];
+        int outstandingAmount = invoice['outstandingAmount'];
 
+        String netAmountString = netAmount.toStringAsFixed(2);
+        String outstandingAmountString = outstandingAmount.toStringAsFixed(2);
         String formattedAmount =
             (netAmount - outstandingAmount).toStringAsFixed(2);
         Color setColor() {
@@ -132,7 +134,7 @@ class _InvoiceListWidgetState extends State<InvoiceListWidget> {
                               height: 41,
                               child: SingleChildScrollView(
                                 child: Text(
-                                  '${invoice['customer_title']}',
+                                  '${invoice['customerTitle']}',
                                   style: const TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w500,
@@ -145,7 +147,7 @@ class _InvoiceListWidgetState extends State<InvoiceListWidget> {
                           Padding(
                             padding: const EdgeInsets.only(bottom: 3),
                             child: Text(
-                              '${invoice['customer_code']}',
+                              '${invoice['customerCode']}',
                               style: const TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w400,
@@ -165,7 +167,7 @@ class _InvoiceListWidgetState extends State<InvoiceListWidget> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '$netAmount \$',
+                            "$netAmountString\$",
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
@@ -173,7 +175,7 @@ class _InvoiceListWidgetState extends State<InvoiceListWidget> {
                             ),
                           ),
                           Text(
-                            "$formattedAmount \$",
+                            "$formattedAmount\$",
                             style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
@@ -181,7 +183,7 @@ class _InvoiceListWidgetState extends State<InvoiceListWidget> {
                             ),
                           ),
                           Text(
-                            '$outstandingAmount \$',
+                            '$outstandingAmountString\$',
                             style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
@@ -229,7 +231,7 @@ class _InvoiceListWidgetState extends State<InvoiceListWidget> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                invoice["customer_title"],
+                                invoice["customerTitle"],
                                 style: const TextStyle(
                                     fontSize: 14, fontWeight: FontWeight.w600),
                               ),
@@ -237,7 +239,7 @@ class _InvoiceListWidgetState extends State<InvoiceListWidget> {
                                 height: 10,
                               ),
                               Text(
-                                invoice['invoice_code'],
+                                invoice['invoiceCode'],
                                 style: const TextStyle(
                                     fontSize: 12, fontWeight: FontWeight.w300),
                               ),
@@ -339,7 +341,7 @@ class _InvoiceListWidgetState extends State<InvoiceListWidget> {
                                     ),
                                     TextFormField(
                                       initialValue:
-                                          invoice["net_amount"].toString(),
+                                          invoice["netAmount"].toString(),
                                       readOnly: true,
                                       style: const TextStyle(fontSize: 14),
                                       decoration: const InputDecoration(
@@ -425,7 +427,7 @@ class _InvoiceListWidgetState extends State<InvoiceListWidget> {
                                       ),
                                     ),
                                     TextFormField(
-                                      initialValue: (invoice["net_amount"] -
+                                      initialValue: (invoice["netAmount"] -
                                               double.parse(context
                                                   .read<InvoiceProvider>()
                                                   .odenenTutar))
@@ -541,7 +543,7 @@ class _InvoiceListWidgetState extends State<InvoiceListWidget> {
                                 context
                                     .read<InvoiceProvider>()
                                     .payInvoice(
-                                      invoiceId: invoice["invoice_id"],
+                                      invoiceId: invoice["invoiceId"],
                                       amount: double.parse(context
                                           .read<InvoiceProvider>()
                                           .odenenTutar),

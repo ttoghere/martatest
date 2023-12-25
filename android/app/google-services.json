@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "281278243072",
+    "project_id": "martatest-8cf73",
+    "storage_bucket": "martatest-8cf73.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:281278243072:android:629130ca89c454d52393e5",
+        "android_client_info": {
+          "package_name": "site.tunckankilic.martatest"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDT6j_mtQAH7FHrGZCGH-1sBotfw7VW6_U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

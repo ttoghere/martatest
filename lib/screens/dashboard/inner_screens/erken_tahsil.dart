@@ -375,7 +375,7 @@ class CustomerNameListWidget extends StatelessWidget {
     return FutureBuilder(
       future: context
           .read<InvoiceProvider>()
-          .getInvoices(1), // Fatura türünü istediğiniz gibi ayarlayın
+          .fetchInvoices(), // Fatura türünü istediğiniz gibi ayarlayın
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());

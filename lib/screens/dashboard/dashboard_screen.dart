@@ -1,4 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first, unnecessary_string_interpolations
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:martatest/screens/foy_screen.dart';
 import 'package:provider/provider.dart';
@@ -62,72 +63,75 @@ class _DashboardMobilScreenState extends State<DashboardMobilScreen>
           leading: const SizedBox.shrink(),
           toolbarHeight: 140,
           backgroundColor: const Color(0xFF5850EC),
-          flexibleSpace: FutureBuilder<Map<String, dynamic>>(
-            future: context.read<ProfileProvider>().getUserProfileInfo(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              } else if (snapshot.hasError) {
-                return Center(
-                  child: Text('Error: ${snapshot.error}'),
-                );
-              } else {
-                final Map<String, dynamic> userProfileInfo =
-                    snapshot.data!['data'];
-
-                return Padding(
-                  padding: const EdgeInsets.only(left: 16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(
-                            height: 25,
+          flexibleSpace: Padding(
+            padding: const EdgeInsets.only(left: 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(
+                      height: 25,
+                    ),
+                    Row(
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                      title: const Text(
+                                          "Çıkmak istediğinize emin misiniz ?"),
+                                      content: Row(
+                                        children: [
+                                          IconButton(
+                                            onPressed: () {},
+                                            icon: const Icon(Icons.exit_to_app),
+                                          ),
+                                          IconButton(
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                            icon: const Icon(Icons.list),
+                                          ),
+                                        ],
+                                      ),
+                                    ));
+                          },
+                          child: Image.asset(
+                            "assets/ic_toggle.png",
+                            height: 15,
                           ),
-                          Row(
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                  showDialog(
-                                      context: context,
-                                      builder: (context) => AlertDialog(
-                                            title: const Text(
-                                                "Çıkmak istediğinize emin misiniz ?"),
-                                            content: Row(
-                                              children: [
-                                                IconButton(
-                                                  onPressed: () {
-                                                    context
-                                                        .read<LoginProvider>()
-                                                        .logoutUser(context);
-                                                  },
-                                                  icon: const Icon(
-                                                      Icons.exit_to_app),
-                                                ),
-                                                IconButton(
-                                                  onPressed: () {
-                                                    Navigator.of(context).pop();
-                                                  },
-                                                  icon: const Icon(Icons.list),
-                                                ),
-                                              ],
-                                            ),
-                                          ));
-                                },
-                                child: Image.asset(
-                                  "assets/ic_toggle.png",
-                                  height: 15,
-                                ),
-                              ),
-                              const SizedBox(
-                                width: 15,
-                              ),
-                              Row(
+                        ),
+                        const SizedBox(
+                          width: 15,
+                        ),
+                        FutureBuilder<DocumentSnapshot>(
+                          future: context.read<ProfileProvider>().fetchUserData(
+                              "tuncinyo12"), // Firestore verisini çeken fonksiyon
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            } else if (snapshot.hasError) {
+                              return Center(
+                                child: Text('Hata: ${snapshot.error}'),
+                              );
+                            } else if (snapshot.hasData) {
+                              // Firestore verisini kullanarak istediğiniz UI'ı oluşturun
+                              Map<String, dynamic> userData =
+                                  snapshot.data!.data() as Map<String, dynamic>;
+
+                              String userName = userData['userName'];
+                              String userTitle = userData['userTitle'];
+                              int userId = userData["userId"];
+                              int userType = userData["userType"];
+
+                              return Row(
                                 children: [
                                   Column(
                                     crossAxisAlignment:
@@ -136,8 +140,7 @@ class _DashboardMobilScreenState extends State<DashboardMobilScreen>
                                       Row(
                                         children: [
                                           Text(
-                                            userProfileInfo["user_id"]
-                                                .toString(),
+                                            userId.toString(),
                                             style: const TextStyle(
                                                 color: Colors.white),
                                           ),
@@ -147,7 +150,7 @@ class _DashboardMobilScreenState extends State<DashboardMobilScreen>
                                                 TextStyle(color: Colors.white),
                                           ),
                                           Text(
-                                            userProfileInfo["user_title"],
+                                            userTitle,
                                             style: const TextStyle(
                                                 color: Colors.white,
                                                 fontWeight: FontWeight.bold),
@@ -167,8 +170,7 @@ class _DashboardMobilScreenState extends State<DashboardMobilScreen>
                                                 TextStyle(color: Colors.white),
                                           ),
                                           Text(
-                                            userProfileInfo["user_type"]
-                                                .toString(),
+                                            userType.toString(),
                                             style: const TextStyle(
                                                 color: Colors.white),
                                           )
@@ -177,145 +179,130 @@ class _DashboardMobilScreenState extends State<DashboardMobilScreen>
                                     ],
                                   ),
                                 ],
+                              );
+                            } else {
+                              return const Center(
+                                child: Text('Veri bulunamadı.'),
+                              );
+                            }
+                          },
+                        ),
+                        const SizedBox(
+                          width: 100,
+                        ),
+                        Container(
+                          margin: const EdgeInsets.only(right: 15),
+                          height: 35,
+                          width: 35,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    FutureBuilder(
+                      future: context.read<InvoiceProvider>().fetchInvoices(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        } else if (snapshot.hasError) {
+                          return Center(
+                            child: Text('Error: ${snapshot.error}'),
+                          );
+                        } else if (snapshot.connectionState ==
+                            ConnectionState.done) {
+                          List<Map<String, dynamic>> invoices = snapshot.data!;
+                          double totalNetAmount = 0;
+                          double havale = 0.0;
+                          for (int i = 0; i < invoices.length; i++) {
+                            Map<String, dynamic> invoiceData = invoices[i];
+                            int netAmount = invoiceData['netAmount'] ?? 0;
+                            totalNetAmount += netAmount;
+                          }
+
+                          for (int i = 0; i < invoices.length; i++) {
+                            Map<String, dynamic> invoiceData = invoices[i];
+                            int action = invoiceData['bank_act_amount'] ?? 0.0;
+                            havale += action;
+                          }
+
+                          return Row(
+                            children: [
+                              const Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Genel Toplam",
+                                    style: TextStyle(
+                                      color: Color(0xFFEDEDED),
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 4,
+                                  ),
+                                  Text(
+                                    "Havale",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 4,
+                                  ),
+                                ],
                               ),
                               const SizedBox(
-                                width: 100,
+                                width: 30,
                               ),
-                              Container(
-                                margin: const EdgeInsets.only(right: 15),
-                                height: 35,
-                                width: 35,
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "${totalNetAmount.toStringAsFixed(2)}\$",
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 4,
+                                  ),
+                                  Text(
+                                    "${havale.toStringAsFixed(2)}\$",
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 4,
+                                  ),
+                                ],
                               ),
                             ],
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          FutureBuilder(
-                            future:
-                                context.read<InvoiceProvider>().getInvoices(1),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return const Center(
-                                  child: CircularProgressIndicator(),
-                                );
-                              } else if (snapshot.hasError) {
-                                return Center(
-                                  child: Text('Error: ${snapshot.error}'),
-                                );
-                              } else {
-                                List<Map<String, dynamic>> invoices =
-                                    snapshot.data!;
-                                var genelToplam = 0.0;
-                                double havale = 0.0;
-                                var erkenTahsilat = 0.0;
-                                var otelenen = 0.0;
-
-                                for (var v in invoices) {
-                                  havale += v["bank_act_amount"];
-                                }
-                                for (var v in invoices) {
-                                  genelToplam += v["net_amount"];
-                                }
-
-                                for (var v in invoices) {
-                                  otelenen += v["outstanding_amount"];
-                                }
-                                erkenTahsilat = genelToplam - otelenen - havale;
-                                return Row(
-                                  children: [
-                                    const Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          "Genel Toplam",
-                                          style: TextStyle(
-                                            color: Color(0xFFEDEDED),
-                                            fontWeight: FontWeight.w700,
-                                            fontSize: 12,
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          height: 4,
-                                        ),
-                                        Text(
-                                          "Havale",
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.w700,
-                                            fontSize: 14,
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          height: 4,
-                                        ),
-                                        Text(
-                                          "Erken Tahsilat",
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.w700,
-                                            fontSize: 14,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(
-                                      width: 30,
-                                    ),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          "${genelToplam.toStringAsFixed(2)}\$",
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.w700,
-                                            fontSize: 14,
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          height: 4,
-                                        ),
-                                        Text(
-                                          "${havale.toStringAsFixed(2)}\$",
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.w700,
-                                            fontSize: 14,
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          height: 4,
-                                        ),
-                                        Text(
-                                          "${erkenTahsilat.toStringAsFixed(2)}",
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.w700,
-                                            fontSize: 14,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                );
-                              }
-                            },
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                );
-              }
-            },
+                          );
+                        } else {
+                          return Text('Veri alınamadı.');
+                        }
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
         body: Column(
@@ -371,7 +358,7 @@ class _DashboardMobilScreenState extends State<DashboardMobilScreen>
                           isDismissible: false,
                           builder: (context) => FutureBuilder(
                             future:
-                                context.read<InvoiceProvider>().getInvoices(1),
+                                context.read<InvoiceProvider>().fetchInvoices(),
                             builder: (context, snapshot) {
                               var vadesiGelen = 0.0;
                               var tahsilEdilen = 0.0;
@@ -389,10 +376,10 @@ class _DashboardMobilScreenState extends State<DashboardMobilScreen>
                                 List<Map<String, dynamic>> invoices =
                                     snapshot.data!;
                                 for (var v in invoices) {
-                                  vadesiGelen += v["net_amount"];
+                                  vadesiGelen += v["netAmount"];
                                 }
                                 for (var v in invoices) {
-                                  otelenen += v["outstanding_amount"];
+                                  otelenen += v["outstandingAmount"];
                                 }
                                 for (var v in invoices) {
                                   tahsilEdilen += v["bank_act_amount"];
