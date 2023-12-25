@@ -1,4 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first, unnecessary_string_interpolations
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:martatest/screens/foy_screen.dart';
@@ -17,10 +19,26 @@ class DashboardMobilScreen extends StatefulWidget {
 class _DashboardMobilScreenState extends State<DashboardMobilScreen>
     with TickerProviderStateMixin {
   late TabController tabController;
+  late Timer _timer;
+
   @override
   void initState() {
     tabController = TabController(length: 3, vsync: this);
+    _startTimer();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel(); // Timer'ı temizle
+    super.dispose();
+  }
+
+  void _startTimer() {
+    _timer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
+      // Her 5 saniyede bir çağrılacak fonksiyon
+      context.read<InvoiceProvider>().fetchInvoices();
+    });
   }
 
   // Alt sayfanın açılıp kapanmasını kontrol etmek için bir GlobalKey kullanılır.
@@ -295,7 +313,7 @@ class _DashboardMobilScreenState extends State<DashboardMobilScreen>
                             ],
                           );
                         } else {
-                          return Text('Veri alınamadı.');
+                          return const Text('Veri alınamadı.');
                         }
                       },
                     ),

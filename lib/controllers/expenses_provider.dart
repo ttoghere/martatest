@@ -1,158 +1,112 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
 class ExpensesProvider extends ChangeNotifier {
-  //Harcama Listesi
-  Future<List<dynamic>> getExpenses(int leafletId) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String token = prefs.getString('access_token') ?? '';
+  late List<Map<String, dynamic>> _expenses;
 
-    final String url =
-        'https://test.guzelasistan.com/core/v1/mobile/expenses/$leafletId';
-    final Map<String, String> headers = {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',
-    };
+  ExpenseProvider() {
+    _expenses = [];
+    // Expenses koleksiyonundaki verileri ilk kez çekmek için bir fonksiyonu çağır
+    fetchExpenses();
+  }
 
-    final http.Response response = await http.get(
-      Uri.parse(url),
-      headers: headers,
-    );
+  List<Map<String, dynamic>> get expenses => _expenses;
 
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> responseData =
-          json.decode(utf8.decode(response.bodyBytes));
-      final List<dynamic> expenses = responseData['data'] ?? [];
+  Future<List<dynamic>> fetchExpenses() async {
+    try {
+      // Firestore'dan expenses koleksiyonundaki verileri çek
+      QuerySnapshot querySnapshot =
+          await FirebaseFirestore.instance.collection('expenses').get();
+
+      // Verileri işle ve _expenses listesini güncelle
+      List<Map<String, dynamic>> expensesData = querySnapshot.docs
+          .map((QueryDocumentSnapshot document) =>
+              document.data() as Map<String, dynamic>)
+          .toList();
+
+      // Değişiklikleri dinleyen widget'ları güncelle
       notifyListeners();
 
-      return expenses;
-    } else {
-      throw Exception(
-          'HTTP request failed with status: ${response.statusCode}');
+      return expensesData;
+    } catch (e) {
+      log('Error fetching expenses: $e');
+      // Hata durumunda boş bir liste dönebilir veya isteğe bağlı olarak hata yönetimi yapabilirsiniz.
+      return [];
     }
   }
 
   //Harcama Ekleme
-  Future<void> addExpense(
-      {required double amount,
-      required int leafletId,
-      required String description,
-      required int typeOf}) async {
-    const String apiUrl =
-        'https://test.guzelasistan.com/core/v1/mobile/expenses';
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String token = prefs.getString('access_token') ?? '';
-    final Map<String, dynamic> requestData = {
-      'leaflet_id': leafletId,
-      'amount': amount,
-      'description': description,
-      'type_of': typeOf,
-    };
-
+  Future<void> addExpenseToFirestore({
+    required String amount,
+    required String description,
+    required int typeOf,
+  }) async {
     try {
-      final response = await http.post(
-        Uri.parse(apiUrl),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-          'Authorization': 'Bearer $token',
-        },
-        body: jsonEncode(requestData),
-      );
+      // Yeni bir belge eklemek için haritayı oluştur
+      Map<String, dynamic> newExpense = {
+        'amount': int.parse(amount),
+        'description': description,
+        'expenseId': 1,
+        'leafletId': 1,
+        'typeOf': typeOf,
+        'userId': 1,
+      };
 
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> responseData =
-            json.decode(utf8.decode(response.bodyBytes));
-
-        // Handle the response data as needed
-        log('Response Data: $responseData');
-      } else {
-        // Handle the error
-        log('HTTP request failed with status: ${response.statusCode}');
-        log('Error Message: ${response.body}');
-      }
-    } catch (error) {
-      // Handle the exception
-      log('An error occurred: $error');
-    }
-    notifyListeners();
+      // Firestore'daki 'expenses' koleksiyonuna haritayı ekle
+      await FirebaseFirestore.instance.collection('expenses').add(newExpense);
+    } catch (e) {}
   }
 
-  Future<void> updateExpense(
-      {required String description,
-      required int id,
-      required double amount}) async {
-    // Replace with your actual URLs
-    const String localUrl = 'http://127.0.0.1:5061/v1/mobile/expenses';
-    const String remoteUrl =
-        'https://test.guzelasistan.com/core/v1/mobile/expenses';
-
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String token = prefs.getString('access_token') ?? '';
-    // Replace with your actual expense data
-    final Map<String, dynamic> expenseData = {
-      "expense_id": id,
-      "amount": amount,
-      "description": description,
-      "type_of": 1,
-    };
-
+  Future<void> updateExpense({
+    required String expenseId,
+    required double newAmount,
+    required String newDescription,
+    required int newTypeOf,
+  }) async {
     try {
-      final http.Response response = await http.patch(
-        Uri.parse(remoteUrl),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-        body: jsonEncode(expenseData),
-      );
+      // Firestore'dan belirli bir expense'ı güncelle
+      await FirebaseFirestore.instance
+          .collection('expenses')
+          .doc(expenseId)
+          .update({
+        'amount': newAmount,
+        'description': newDescription,
+        'typeOf': newTypeOf,
+      });
 
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> responseData = jsonDecode(response.body);
-        log('Update successful:');
-        log(responseData.toString());
-      } else {
-        log('Failed to update expense. Status code: ${response.statusCode}');
-        log('Response body: ${response.body}');
-      }
+      // Güncelleme başarılı olduysa, _expenses listesini de güncelleyebilir ve
+      // Değişiklikleri dinleyen widget'ları güncelleyebilirsiniz.
+      // Ancak bu, state yönetimi ve widget'ların nasıl yapılandırıldığına bağlı olarak değişebilir.
+      // notifyListeners(); // Örnek: Provider kullanıyorsanız, bu metodu çağırabilirsiniz.
     } catch (e) {
-      log('Error during the update process: $e');
+      log('Error updating expense: $e');
+      // Hata yönetimi yapabilirsiniz.
     }
   }
 
   //Harcama Silme
-  Future<void> removeExpense(int expenseId) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String token = prefs.getString('access_token') ?? '';
+  Future<void> deleteExpense(String expenseId) async {
+    try {
+      // Firestore'dan belirli bir expense'ı sil
+      await FirebaseFirestore.instance
+          .collection('expenses')
+          .doc(expenseId)
+          .delete();
 
-    final String url =
-        'https://test.guzelasistan.com/core/v1/mobile/expenses/$expenseId';
-    final Map<String, String> headers = {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',
-    };
-
-    final http.Response response = await http.delete(
-      Uri.parse(url),
-      headers: headers,
-    );
-
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> responseData =
-          json.decode(utf8.decode(response.bodyBytes));
-      if (responseData['error'] == false) {
-        log('Expense removed successfully.');
-      } else {
-        throw Exception(
-            'Expense removal failed. Message: ${responseData['message']}');
-      }
-    } else {
-      throw Exception(
-          'HTTP request failed with status: ${response.statusCode}');
+      // Silme işlemi başarılı olduysa, _expenses listesini güncelleyebilir ve
+      // Değişiklikleri dinleyen widget'ları güncelleyebilirsiniz.
+      // Ancak bu, state yönetimi ve widget'ların nasıl yapılandırıldığına bağlı olarak değişebilir.
+      // notifyListeners(); // Örnek: Provider kullanıyorsanız, bu metodu çağırabilirsiniz.
+    } catch (e) {
+      log('Error deleting expense: $e');
+      // Hata yönetimi yapabilirsiniz.
     }
-    notifyListeners();
   }
 }

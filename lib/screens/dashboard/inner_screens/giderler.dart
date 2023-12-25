@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:martatest/controllers/controllers.dart';
 import 'package:provider/provider.dart';
@@ -16,6 +18,25 @@ class _GiderlerState extends State<Giderler> {
   TextEditingController _aciklamaEditingController = TextEditingController();
   TextEditingController _tutarEditingController = TextEditingController();
   int typeOf = 1;
+  late Timer _timer;
+  void _startTimer() {
+    _timer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
+      // Her 5 saniyede bir çağrılacak fonksiyon
+      context.read<ExpensesProvider>().fetchExpenses();
+    });
+  }
+
+  @override
+  void initState() {
+    _startTimer();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel(); // Timer'ı temizle
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -253,13 +274,20 @@ class _GiderlerState extends State<Giderler> {
                       onPressed: () async {
                         await context
                             .read<ExpensesProvider>()
-                            .addExpense(
-                                typeOf: typeOf,
-                                amount:
-                                    double.parse(_tutarEditingController.text),
-                                leafletId: 1,
-                                description: _aciklamaEditingController.text)
+                            .addExpenseToFirestore(
+                                amount: _tutarEditingController.text,
+                                description: _aciklamaEditingController.text,
+                                typeOf: typeOf);
+                        await context
+                            .read<ExpensesProvider>()
+                            .fetchExpenses()
                             .whenComplete(() => Navigator.of(context).pop());
+                        // .addExpenseToFirestore(
+                        //     typeOf: typeOf,
+                        //     amount:
+                        //         double.parse(_tutarEditingController.text),
+                        //     leafletId: 1,
+                        //     description: _aciklamaEditingController.text)
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF5850EC),
@@ -293,7 +321,7 @@ class Expenses extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<dynamic>>(
-      future: context.read<ExpensesProvider>().getExpenses(1),
+      future: context.read<ExpensesProvider>().fetchExpenses(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(
@@ -355,11 +383,11 @@ class _ExpenseListWidgetState extends State<ExpenseListWidget> {
                           onPressed: () {
                             context
                                 .read<ExpensesProvider>()
-                                .removeExpense(expense["expense_id"])
+                                .deleteExpense(expense["id"])
                                 .whenComplete(() async {
                               await context
                                   .read<ExpensesProvider>()
-                                  .getExpenses(1);
+                                  .fetchExpenses();
                               Navigator.of(context).pop();
                             });
                           },
@@ -608,9 +636,11 @@ class _ExpenseListWidgetState extends State<ExpenseListWidget> {
                                     await context
                                         .read<ExpensesProvider>()
                                         .updateExpense(
-                                            description: expense["description"],
-                                            id: expense["expense_id"],
-                                            amount: expense["amount"])
+                                            expenseId: expense["id"],
+                                            newAmount: expense["amount"],
+                                            newDescription:
+                                                expense["description"],
+                                            newTypeOf: expense["typeOf"])
                                         .whenComplete(
                                             () => Navigator.of(context).pop());
                                   },

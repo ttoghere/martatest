@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ExpenseItem {
+  final String id;
   final int expenseId;
   final int userId;
   final int leafletId;
@@ -11,6 +12,7 @@ class ExpenseItem {
   final DateTime updatedAt;
 
   ExpenseItem({
+    required this.id,
     required this.expenseId,
     required this.userId,
     required this.leafletId,
@@ -25,6 +27,7 @@ class ExpenseItem {
     Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
 
     return ExpenseItem(
+      id: data?["id"] ?? "",
       expenseId: data?['expense_id'] ?? 0,
       userId: data?['user_id'] ?? 0,
       leafletId: data?['leaflet_id'] ?? 0,

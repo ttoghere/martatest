@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -14,6 +15,7 @@ class InvoiceProvider extends ChangeNotifier {
   String? aciklama;
   int selectedPaymentOption = 1;
 
+  //Future
   Future<List<Map<String, dynamic>>> fetchInvoices() async {
     try {
       QuerySnapshot<Map<String, dynamic>> querySnapshot =
@@ -33,6 +35,36 @@ class InvoiceProvider extends ChangeNotifier {
       log('Veri çekme işlemi başarısız oldu: $e');
       return [];
     }
+  }
+
+  final StreamController<List<Map<String, dynamic>>> _invoicesController =
+      StreamController<List<Map<String, dynamic>>>();
+
+  Stream<List<Map<String, dynamic>>> get invoicesStream =>
+      _invoicesController.stream;
+
+  Future<void> fetchAndStreamInvoices() async {
+    try {
+      QuerySnapshot<Map<String, dynamic>> querySnapshot =
+          await FirebaseFirestore.instance.collection('invoices').get();
+
+      List<QueryDocumentSnapshot<Map<String, dynamic>>> documents =
+          querySnapshot.docs;
+      List<Map<String, dynamic>> invoices =
+          documents.map((document) => document.data()).toList();
+
+      // Stream'e verileri ekleyin
+      _invoicesController.add(invoices);
+    } catch (e) {
+      log('Veri çekme işlemi başarısız oldu: $e');
+      _invoicesController.addError(e.toString());
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _invoicesController.close();
   }
 
   // Future<List<Map<String, dynamic>>> getInvoices(int typeOf) async {
